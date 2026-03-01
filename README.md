@@ -14,3 +14,4 @@ lib
 │           ├── screens  -> feature screens (pages)
 │           │   └── widgets -> reusable widgets for screens
 │           └── cubit    -> state management logic
+ 
