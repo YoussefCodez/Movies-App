@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../view_models/home_view_model.dart';
+import 'package:movies/features/home/presentation/view_models/home_view_model.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -40,9 +40,12 @@ class HomeTab extends StatelessWidget {
                     aspectRatio: 16 / 9,
                     autoPlayCurve: Curves.fastOutSlowIn,
                     enableInfiniteScroll: true,
-                    autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                    autoPlayAnimationDuration: const Duration(
+                      milliseconds: 800,
+                    ),
                     viewportFraction: 0.65, // Shows partial side items
-                    onPageChanged: (index, reason) => viewModel.onCarouselPageChanged(index),
+                    onPageChanged: (index, reason) =>
+                        viewModel.onCarouselPageChanged(index),
                   ),
                   items: viewModel.availableNowMovies.map((url) {
                     return Builder(
@@ -61,7 +64,10 @@ class HomeTab extends StatelessWidget {
                             alignment: Alignment.topLeft,
                             child: Container(
                               margin: const EdgeInsets.all(8),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.black54,
                                 borderRadius: BorderRadius.circular(10),
@@ -69,9 +75,19 @@ class HomeTab extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: const [
-                                  Text('7.7', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                  Text(
+                                    '7.7',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   SizedBox(width: 4),
-                                  Icon(Icons.star, color: Colors.yellow, size: 16),
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.yellow,
+                                    size: 16,
+                                  ),
                                 ],
                               ),
                             ),
@@ -102,18 +118,35 @@ class HomeTab extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('action'.tr(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(
+                        'action'.tr(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       Row(
                         children: [
-                          Text('see_more'.tr(), style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 14)),
-                          Icon(Icons.arrow_forward, color: Theme.of(context).primaryColor, size: 16),
+                          Text(
+                            'see_more'.tr(),
+                            style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Theme.of(context).primaryColor,
+                            size: 16,
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 10),
-                
+
                 // Horizontal ListView
                 SizedBox(
                   height: 200,
@@ -136,7 +169,10 @@ class HomeTab extends StatelessWidget {
                           alignment: Alignment.topLeft,
                           child: Container(
                             margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.black54,
                               borderRadius: BorderRadius.circular(8),
@@ -144,9 +180,20 @@ class HomeTab extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: const [
-                                Text('7.7', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                                Text(
+                                  '7.7',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 SizedBox(width: 4),
-                                Icon(Icons.star, color: Colors.yellow, size: 12),
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 12,
+                                ),
                               ],
                             ),
                           ),

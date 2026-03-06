@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../view_models/profile_view_model.dart';
+import 'package:movies/features/profile/presentation/view_models/profile_view_model.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -20,7 +20,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     super.initState();
     final viewModel = context.read<ProfileViewModel>();
     _nameController = TextEditingController(text: viewModel.userProfile?.name);
-    _phoneController = TextEditingController(text: viewModel.userProfile?.phoneNumber);
+    _phoneController = TextEditingController(
+      text: viewModel.userProfile?.phoneNumber,
+    );
     _selectedAvatar = viewModel.userProfile?.avatarPath;
   }
 
@@ -38,7 +40,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text('update_profile'.tr(), style: const TextStyle(color: Colors.white)),
+        title: Text(
+          'update_profile'.tr(),
+          style: const TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFFFFC107)),
@@ -59,12 +64,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       radius: 60,
                       backgroundImage: AssetImage(_selectedAvatar ?? ''),
                       backgroundColor: Colors.grey[800],
-                      onBackgroundImageError: (_, __) => const Icon(Icons.person, size: 60),
+                      onBackgroundImageError: (_, __) =>
+                          const Icon(Icons.person, size: 60),
                     ),
                   ],
                 ),
                 const SizedBox(height: 30),
-                
+
                 // Form Fields
                 _buildTextField(
                   controller: _nameController,
@@ -85,7 +91,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     onPressed: () {
                       // Reset password logic
                     },
-                    child: Text('reset_password'.tr(), style: const TextStyle(color: Colors.white70)),
+                    child: Text(
+                      'reset_password'.tr(),
+                      style: const TextStyle(color: Colors.white70),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -109,13 +118,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isSelected ? const Color(0xFFFFC107) : Colors.transparent,
+                            color: isSelected
+                                ? const Color(0xFFFFC107)
+                                : Colors.transparent,
                             width: 3,
                           ),
                         ),
                         child: CircleAvatar(
                           backgroundImage: AssetImage(avatar),
-                          onBackgroundImageError: (_, __) => const Icon(Icons.person),
+                          onBackgroundImageError: (_, __) =>
+                              const Icon(Icons.person),
                         ),
                       ),
                     );
@@ -133,9 +145,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFE53935),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: Text('delete_account'.tr(), style: const TextStyle(color: Colors.white)),
+                    child: Text(
+                      'delete_account'.tr(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -143,23 +160,38 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: viewModel.isLoading 
-                      ? null 
-                      : () async {
-                        await viewModel.updateProfile(
-                          name: _nameController.text,
-                          phone: _phoneController.text,
-                          avatar: _selectedAvatar,
-                        );
-                        if (mounted) Navigator.pop(context);
-                      },
+                    onPressed: viewModel.isLoading
+                        ? null
+                        : () async {
+                            await viewModel.updateProfile(
+                              name: _nameController.text,
+                              phone: _phoneController.text,
+                              avatar: _selectedAvatar,
+                            );
+                            if (mounted) Navigator.pop(context);
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFC107),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                    child: viewModel.isLoading 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
-                      : Text('update_data'.tr(), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    child: viewModel.isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.black,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'update_data'.tr(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 40),

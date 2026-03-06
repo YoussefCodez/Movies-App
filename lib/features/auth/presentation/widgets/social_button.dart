@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:movies/core/theme/app_colors.dart';
 
 class SocialButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const SocialButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-  });
+  const SocialButton({super.key, required this.text, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +34,7 @@ class SocialButton extends StatelessWidget {
             const SizedBox(width: 12),
             Text(
               text,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),

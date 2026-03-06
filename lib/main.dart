@@ -8,21 +8,21 @@ import 'core/providers/theme_provider.dart';
 import 'core/providers/language_provider.dart';
 
 // Screens
-import 'presentation/views/splash/splash_screen.dart';
-import 'presentation/view_models/splash_view_model.dart';
-import 'presentation/views/auth/login_screen.dart';
-import 'presentation/views/auth/register_screen.dart';
-import 'presentation/views/auth/forget_password_screen.dart';
-import 'presentation/views/main/main_layout_screen.dart';
+import 'features/splash/presentation/views/splash_screen.dart';
+import 'features/splash/presentation/view_models/splash_view_model.dart';
+import 'features/auth/presentation/views/login_screen.dart';
+import 'features/auth/presentation/views/register_screen.dart';
+import 'features/auth/presentation/views/forget_password_screen.dart';
+import 'features/main/presentation/views/main_layout_screen.dart';
 
 // Repository Imports
-import 'domain/repositories/auth_repository.dart';
-import 'data/repositories/firebase_auth_repository.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/data/repositories/firebase_auth_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  
+
   // Initialize Firebase resiliently
   try {
     await Firebase.initializeApp();
@@ -35,7 +35,7 @@ void main() async {
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ar')],
-      path: 'assets/translations', 
+      path: 'assets/translations',
       fallbackLocale: const Locale('en'),
       child: MultiProvider(
         providers: [
@@ -64,7 +64,7 @@ class MovieApp extends StatelessWidget {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      
+
       // Theme setup
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

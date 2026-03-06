@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/user_profile.dart';
-import '../../domain/repositories/profile_repository.dart';
+import 'package:movies/features/profile/domain/entities/user_profile.dart';
+import 'package:movies/features/profile/domain/repositories/profile_repository.dart';
 
 class ProfileViewModel extends ChangeNotifier {
   final ProfileRepository _repository;

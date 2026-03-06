@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../core/theme/app_colors.dart';
+import 'package:movies/core/theme/app_colors.dart';
 
 class LanguageToggle extends StatelessWidget {
   const LanguageToggle({super.key});
@@ -34,13 +34,23 @@ class LanguageToggle extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(left: 4.0),
                   child: ClipOval(
-                    child: Image.asset('assets/images/us_flag.png', width: 26, height: 26, fit: BoxFit.cover),
+                    child: Image.asset(
+                      'assets/images/us_flag.png',
+                      width: 26,
+                      height: 26,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 4.0),
                   child: ClipOval(
-                    child: Image.asset('assets/images/eg_flag.png', width: 26, height: 26, fit: BoxFit.cover),
+                    child: Image.asset(
+                      'assets/images/eg_flag.png',
+                      width: 26,
+                      height: 26,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ],
@@ -49,7 +59,9 @@ class LanguageToggle extends StatelessWidget {
             AnimatedAlign(
               duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+              alignment: isArabic
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
               child: Container(
                 width: 34,
                 height: 34,

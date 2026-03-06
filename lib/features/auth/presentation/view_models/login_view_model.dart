@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../domain/repositories/auth_repository.dart';
+import 'package:movies/features/auth/domain/repositories/auth_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
 
-  LoginViewModel({required AuthRepository authRepository}) : _authRepository = authRepository;
+  LoginViewModel({required AuthRepository authRepository})
+    : _authRepository = authRepository;
 
   bool _isPasswordVisible = false;
   bool _isLoading = false;

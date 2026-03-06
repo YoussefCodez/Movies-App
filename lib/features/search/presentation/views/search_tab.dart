@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../view_models/search_view_model.dart';
+import 'package:movies/features/search/presentation/view_models/search_view_model.dart';
 
 class SearchTab extends StatelessWidget {
   const SearchTab({super.key});
@@ -35,9 +35,9 @@ class SearchTab extends StatelessWidget {
                     ),
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Empty State Illustration (only if not searching/no results)
                 if (!viewModel.isSearching)
                   Column(
@@ -46,18 +46,19 @@ class SearchTab extends StatelessWidget {
                       Image.asset(
                         'assets/images/no_results.png',
                         width: 200,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
-                          Icons.movie_creation_outlined,
-                          size: 100,
-                          color: Colors.white24,
-                        ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
+                              Icons.movie_creation_outlined,
+                              size: 100,
+                              color: Colors.white24,
+                            ),
                       ),
                     ],
                   ),
-                
+
                 // If searching, show results list (placeholder)
                 if (viewModel.isSearching)
-                   const Expanded(
+                  const Expanded(
                     child: Center(
                       child: Text(
                         'Searching...',

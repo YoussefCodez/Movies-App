@@ -1,5 +1,5 @@
-import '../../domain/entities/user_profile.dart';
-import '../../domain/repositories/profile_repository.dart';
+import 'package:movies/features/profile/domain/entities/user_profile.dart';
+import 'package:movies/features/profile/domain/repositories/profile_repository.dart';
 
 class MockProfileRepository implements ProfileRepository {
   UserProfile _mockProfile = UserProfile(
@@ -13,7 +13,7 @@ class MockProfileRepository implements ProfileRepository {
       'https://image.tmdb.org/t/p/w500/vSNxAJTlD0r02V8s0BN0nI82n3t.jpg',
     ],
     history: [
-       'https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg',
+      'https://image.tmdb.org/t/p/w500/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg',
     ],
   );
 

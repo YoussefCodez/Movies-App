@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../view_models/main_layout_view_model.dart';
-import '../home/home_tab.dart';
-import '../search/search_tab.dart';
-
-import '../profile/profile_tab.dart';
+import 'package:movies/features/main/presentation/view_models/main_layout_view_model.dart';
+import 'package:movies/features/home/presentation/views/home_tab.dart';
+import 'package:movies/features/search/presentation/views/search_tab.dart';
+import 'package:movies/features/profile/presentation/views/profile_tab.dart';
 
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key});
@@ -15,7 +14,12 @@ class MainLayoutScreen extends StatelessWidget {
     final List<Widget> tabs = [
       const HomeTab(),
       const SearchTab(),
-      const Center(child: Text('Browse Tab', style: TextStyle(color: Colors.white, fontSize: 24))),
+      const Center(
+        child: Text(
+          'Browse Tab',
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
+      ),
       const ProfileTab(),
     ];
 
@@ -36,9 +40,18 @@ class MainLayoutScreen extends StatelessWidget {
               onTap: viewModel.changeTab,
               items: const [
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-                BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Browse'),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.search),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.explore),
+                  label: 'Browse',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
               ],
             ),
           );
