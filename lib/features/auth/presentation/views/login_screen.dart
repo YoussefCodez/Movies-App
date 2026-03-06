@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/auth/presentation/view_models/login_view_model.dart';
 import 'package:movies/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:movies/features/auth/presentation/widgets/primary_button.dart';
 import 'package:movies/features/auth/presentation/widgets/social_button.dart';
 import 'package:movies/features/auth/presentation/widgets/language_toggle.dart';
 import 'package:movies/features/auth/domain/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movies/features/auth/presentation/cubits/login_cubit.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -17,11 +17,10 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isArabic = context.locale.languageCode == 'ar';
-    final authRepository = Provider.of<AuthRepository>(context, listen: false);
+    final authRepository = RepositoryProvider.of<AuthRepository>(context);
 
-    // Use ChangeNotifierProvider inside the route configuration or here per screen
-    return ChangeNotifierProvider(
-      create: (_) => LoginViewModel(authRepository: authRepository),
+    return BlocProvider(
+      create: (_) => LoginCubit(authRepository: authRepository),
       child: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -29,45 +28,51 @@ class LoginScreen extends StatelessWidget {
               horizontal: 24.0,
               vertical: 40.0,
             ),
-            child: Consumer<LoginViewModel>(
-              builder: (context, viewModel, child) {
+            child: BlocConsumer<LoginCubit, LoginState>(
+              listener: (context, state) {
+                if (state is LoginSuccess) {
+                  Navigator.pushReplacementNamed(context, '/main');
+                } else if (state is LoginFailure) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                }
+              },
+              builder: (context, state) {
+                final cubit = context.read<LoginCubit>();
+                final isLoading = state is LoginLoading;
+                final isPasswordVisible = cubit.isPasswordVisible;
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Play Logo
                     Icon(
                       Icons.play_circle_outline,
                       size: 100,
                       color: Theme.of(context).primaryColor,
                     ),
                     const SizedBox(height: 50),
-
-                    // Email Field
                     CustomTextField(
                       controller: emailController,
                       hintText: 'email'.tr(),
                       prefixIcon: Icons.email,
                     ),
                     const SizedBox(height: 16),
-
-                    // Password Field
                     CustomTextField(
                       controller: passwordController,
                       hintText: 'password'.tr(),
                       prefixIcon: Icons.lock,
-                      obscureText: !viewModel.isPasswordVisible,
+                      obscureText: !isPasswordVisible,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          viewModel.isPasswordVisible
+                          isPasswordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
                           color: Colors.white,
                         ),
-                        onPressed: viewModel.togglePasswordVisibility,
+                        onPressed: cubit.togglePasswordVisibility,
                       ),
                     ),
-
-                    // Forget Password Text
                     Align(
                       alignment: isArabic
                           ? Alignment.centerLeft
@@ -84,20 +89,16 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-
-                    // Login Button
-                    viewModel.isLoading
+                    isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : PrimaryButton(
                             text: 'login'.tr(),
-                            onPressed: () => viewModel.loginWithEmail(
+                            onPressed: () => cubit.loginWithEmail(
                               emailController.text,
                               passwordController.text,
                             ),
                           ),
                     const SizedBox(height: 24),
-
-                    // Create Account Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -119,8 +120,6 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // OR Divider
                     Row(
                       children: [
                         const Expanded(
@@ -141,15 +140,11 @@ class LoginScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // Google Login Button
                     SocialButton(
                       text: 'login_with_google'.tr(),
-                      onPressed: viewModel.loginWithGoogle,
+                      onPressed: cubit.loginWithGoogle,
                     ),
                     const SizedBox(height: 48),
-
-                    // Language Toggle
                     const Align(
                       alignment: Alignment.center,
                       child: LanguageToggle(),

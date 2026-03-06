@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/profile/presentation/view_models/profile_view_model.dart';
+import 'package:movies/features/profile/presentation/cubits/profile_cubit.dart';
 import 'package:movies/features/profile/data/repositories/mock_profile_repository.dart';
 import 'package:movies/features/profile/presentation/views/update_profile_screen.dart';
 
@@ -10,262 +10,205 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProfileViewModel(MockProfileRepository()),
-      child: Consumer<ProfileViewModel>(
-        builder: (context, viewModel, child) {
-          if (viewModel.isLoading && viewModel.userProfile == null) {
+    return BlocProvider(
+      create: (_) => ProfileCubit(MockProfileRepository()),
+      child: BlocBuilder<ProfileCubit, ProfileState>(
+        builder: (context, state) {
+          if (state.isLoading && state.userProfile == null) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final user = viewModel.userProfile;
+          final user = state.userProfile;
           if (user == null) {
-            return const Center(
+            return Center(
               child: Text(
-                'Error loading profile',
-                style: TextStyle(color: Colors.white),
+                state.errorMessage ?? 'Error loading profile',
+                style: const TextStyle(color: Colors.white),
               ),
             );
           }
 
-          return Column(
-            children: [
-              const SizedBox(height: 20),
-              // Header Section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage(user.avatarPath),
-                      backgroundColor: Colors.grey[800],
-                      onBackgroundImageError: (_, __) =>
-                          const Icon(Icons.person, size: 40),
-                    ),
-                    const SizedBox(width: 40),
-                    _buildStatItem(
-                      user.wishList.length.toString(),
-                      'wish_list'.tr(),
-                    ),
-                    const SizedBox(width: 40),
-                    _buildStatItem(
-                      user.history.length.toString(),
-                      'history'.tr(),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    user.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+          final cubit = context.read<ProfileCubit>();
 
-              // Action Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  ChangeNotifierProvider.value(
-                                    value: viewModel,
-                                    child: const UpdateProfileScreen(),
-                                  ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFC107),
-                          foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Text('edit_profile'.tr()),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Logout logic later
-                        Navigator.pushReplacementNamed(context, '/login');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE53935),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                // User Header Info
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Column(
                         children: [
-                          Text('exit'.tr()),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.logout, size: 18),
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundImage: AssetImage(user.avatarPath),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            user.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
                       ),
+                      const SizedBox(width: 40),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildStatColumn(
+                              user.wishList.length.toString(),
+                              'wish_list'.tr(),
+                            ),
+                            _buildStatColumn(
+                              user.history.length.toString(),
+                              'history'.tr(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Action Buttons
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFFC107),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => BlocProvider.value(
+                                value: cubit,
+                                child: const UpdateProfileScreen(),
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            'edit_profile'.tr(),
+                            style: const TextStyle(color: Colors.black),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () =>
+                            Navigator.pushReplacementNamed(context, '/login'),
+                        child: Row(
+                          children: [
+                            Text(
+                              'exit'.tr(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.exit_to_app,
+                              color: Colors.white,
+                              size: 18,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                // Tab Bar like Switcher
+                Row(
+                  children: [
+                    _buildTabItem(
+                      context,
+                      0,
+                      Icons.list,
+                      'wish_list'.tr(),
+                      state.selectedTabIndex == 0,
+                    ),
+                    _buildTabItem(
+                      context,
+                      1,
+                      Icons.history,
+                      'history'.tr(),
+                      state.selectedTabIndex == 1,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // Tabs (Watch List / History)
-              Row(
-                children: [
-                  _buildTabButton(
-                    context,
-                    viewModel,
-                    0,
-                    Icons.list,
-                    'watch_list'.tr(),
-                  ),
-                  _buildTabButton(
-                    context,
-                    viewModel,
-                    1,
-                    Icons.folder,
-                    'history'.tr(),
-                  ),
-                ],
-              ),
-              const Divider(color: Colors.white24, height: 1),
-
-              // Grid Content
-              Expanded(child: _buildGridContent(viewModel)),
-            ],
+                // Tab Content Grid
+              ],
+            ),
           );
         },
       ),
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatColumn(String count, String label) {
     return Column(
       children: [
         Text(
-          value,
+          count,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 14),
-        ),
+        Text(label, style: const TextStyle(color: Colors.white, fontSize: 14)),
       ],
     );
   }
 
-  Widget _buildTabButton(
+  Widget _buildTabItem(
     BuildContext context,
-    ProfileViewModel viewModel,
     int index,
     IconData icon,
     String label,
+    bool isSelected,
   ) {
-    final isSelected = viewModel.selectedTabIndex == index;
     return Expanded(
       child: GestureDetector(
-        onTap: () => viewModel.setTabIndex(index),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isSelected
-                    ? const Color(0xFFFFC107)
-                    : Colors.transparent,
-                width: 2,
-              ),
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected ? const Color(0xFFFFC107) : Colors.white60,
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isSelected ? const Color(0xFFFFC107) : Colors.white60,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildGridContent(ProfileViewModel viewModel) {
-    final list = viewModel.selectedTabIndex == 0
-        ? viewModel.userProfile!.wishList
-        : viewModel.userProfile!.history;
-
-    if (list.isEmpty) {
-      return Center(
+        onTap: () => context.read<ProfileCubit>().setTabIndex(index),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.movie_creation_outlined,
-              size: 100,
-              color: Colors.white24,
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFFFFC107) : Colors.white54,
             ),
-            const SizedBox(height: 10),
-            Text('no_data'.tr(), style: const TextStyle(color: Colors.white24)),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFFFFC107) : Colors.white54,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 2,
+              color: isSelected ? const Color(0xFFFFC107) : Colors.transparent,
+            ),
           ],
         ),
-      );
-    }
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 0.7,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
       ),
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.network(
-            list[index],
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: Colors.grey[800]),
-          ),
-        );
-      },
     );
   }
 }

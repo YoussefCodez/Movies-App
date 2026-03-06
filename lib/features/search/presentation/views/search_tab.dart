@@ -1,77 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/search/presentation/view_models/search_view_model.dart';
+import 'package:movies/features/search/presentation/cubits/search_cubit.dart';
 
 class SearchTab extends StatelessWidget {
   const SearchTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SearchViewModel(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Consumer<SearchViewModel>(
-          builder: (context, viewModel, child) {
-            return Column(
-              children: [
-                const SizedBox(height: 20),
-                // Stylized Search Bar
-                Container(
+    return BlocProvider(
+      create: (_) => SearchCubit(),
+      child: BlocBuilder<SearchCubit, SearchState>(
+        builder: (context, state) {
+          final cubit = context.read<SearchCubit>();
+          return Column(
+            children: [
+              const SizedBox(height: 20),
+              // Search Bar
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Container(
+                  height: 55,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF282A28), // Dark grey bar
-                    borderRadius: BorderRadius.circular(12),
+                    color: const Color(0xFF282A28),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: TextField(
-                    onChanged: viewModel.updateSearchQuery,
+                    onChanged: (value) => cubit.updateSearchQuery(value),
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText: 'search'.tr(),
                       hintStyle: const TextStyle(color: Colors.white54),
-                      prefixIcon: const Icon(Icons.search, color: Colors.white),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Colors.white54,
+                      ),
                       border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                      suffixIcon: state.searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(
+                                Icons.clear,
+                                color: Colors.white54,
+                              ),
+                              onPressed: () => cubit.clearSearch(),
+                            )
+                          : null,
                     ),
                   ),
                 ),
-
-                const Spacer(),
-
-                // Empty State Illustration (only if not searching/no results)
-                if (!viewModel.isSearching)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
+              ),
+              const Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset(
-                        'assets/images/no_results.png',
-                        width: 200,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(
-                              Icons.movie_creation_outlined,
-                              size: 100,
-                              color: Colors.white24,
-                            ),
+                      Icon(
+                        Icons.movie_filter,
+                        size: 100,
+                        color: Colors.white24,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'No Movies Found',
+                        style: TextStyle(color: Colors.white24, fontSize: 18),
                       ),
                     ],
                   ),
-
-                // If searching, show results list (placeholder)
-                if (viewModel.isSearching)
-                  const Expanded(
-                    child: Center(
-                      child: Text(
-                        'Searching...',
-                        style: TextStyle(color: Colors.white54),
-                      ),
-                    ),
-                  ),
-
-                const Spacer(),
-              ],
-            );
-          },
-        ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

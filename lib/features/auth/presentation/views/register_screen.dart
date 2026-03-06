@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/auth/presentation/view_models/register_view_model.dart';
+import 'package:movies/core/services/get_it.dart';
+import 'package:movies/features/auth/domain/use_cases/sign_up_use_case.dart';
 import 'package:movies/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:movies/features/auth/presentation/widgets/primary_button.dart';
-import 'package:movies/features/auth/presentation/widgets/language_toggle.dart';
-import 'package:movies/features/auth/domain/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movies/features/auth/presentation/cubit/auth_cubit.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -13,177 +13,116 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
 
   final List<String> avatars = [
-    'assets/images/user1.png',
-    'assets/images/user2.png',
-    'assets/images/user3.png',
+    'assets/images/avatar1.png',
+    'assets/images/avatar2.png',
+    'assets/images/avatar3.png',
+    'assets/images/avatar4.png',
+    'assets/images/avatar5.png',
+    'assets/images/avatar6.png',
+    'assets/images/avatar7.png',
+    'assets/images/avatar8.png',
+    'assets/images/avatar9.png',
   ];
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = Provider.of<AuthRepository>(context, listen: false);
-
-    return ChangeNotifierProvider(
-      create: (_) => RegisterViewModel(authRepository: authRepository),
+    return BlocProvider(
+      create: (_) => AuthCubit(signUpUseCase: getIt<SignUpUseCase>()),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           title: Text(
             'register'.tr(),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+            style: const TextStyle(color: Colors.white),
           ),
+          centerTitle: true,
           leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.yellow,
-            ), // Matches primary
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFFFC107)),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 20.0,
-            ),
-            child: Consumer<RegisterViewModel>(
-              builder: (context, viewModel, child) {
+            padding: const EdgeInsets.all(24.0),
+            child: BlocConsumer<AuthCubit, AuthState>(
+              listener: (context, state) {
+                if (state is SignUpSuccess) {
+                  Navigator.pushReplacementNamed(context, '/main');
+                } else if (state is SignUpError) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                }
+              },
+              builder: (context, state) {
+                final cubit = context.read<AuthCubit>();
+                final isLoading = state is SignUpLoading;
+
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Avatar Selection (Placeholders for now)
+                    // Avatar Selection
                     SizedBox(
-                      height: 120,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(avatars.length, (index) {
-                          bool isSelected =
-                              viewModel.selectedAvatarIndex == index;
-                          return GestureDetector(
-                            onTap: () => viewModel.selectAvatar(index),
+                      height: 150,
+                      child: PageView.builder(
+                        itemCount: avatars.length,
+                        // onPageChanged: (index) =>
+                        //     cubit.selectAvatar(avatars[index]),
+                        itemBuilder: (context, index) {
+                          return Center(
                             child: CircleAvatar(
-                              radius: isSelected ? 50 : 35,
-                              backgroundColor: isSelected
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.transparent,
-                              // backgroundImage: AssetImage(avatars[index]),
-                              child: Icon(
-                                Icons.person,
-                                size: isSelected ? 60 : 40,
-                                color: Colors.white,
-                              ),
+                              radius: 60,
+                              backgroundImage: AssetImage(avatars[index]),
                             ),
                           );
-                        }),
+                        },
                       ),
                     ),
-                    const Center(
-                      child: Text(
-                        'Avatar',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'choose_avatar'.tr(),
+                      style: const TextStyle(color: Colors.white70),
                     ),
                     const SizedBox(height: 30),
-
-                    // Inputs
                     CustomTextField(
                       controller: nameController,
                       hintText: 'name'.tr(),
-                      prefixIcon: Icons.badge,
+                      prefixIcon: Icons.person,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: emailController,
                       hintText: 'email'.tr(),
                       prefixIcon: Icons.email,
-                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: passwordController,
                       hintText: 'password'.tr(),
                       prefixIcon: Icons.lock,
-                      obscureText: !viewModel.isPasswordVisible,
+                      obscureText: false,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          viewModel.isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          Icons.visibility_off,
                           color: Colors.white,
                         ),
-                        onPressed: viewModel.togglePasswordVisibility,
+                        onPressed: () {},
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    CustomTextField(
-                      controller: confirmPasswordController,
-                      hintText: 'confirm_password'.tr(),
-                      prefixIcon: Icons.lock,
-                      obscureText: !viewModel.isConfirmPasswordVisible,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          viewModel.isConfirmPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Colors.white,
-                        ),
-                        onPressed: viewModel.toggleConfirmPasswordVisibility,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextField(
-                      controller: phoneController,
-                      hintText: 'phone_number'.tr(),
-                      prefixIcon: Icons.phone,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Register Button
-                    viewModel.isLoading
+                    const SizedBox(height: 40),
+                    isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : PrimaryButton(
                             text: 'create_account'.tr(),
-                            onPressed: () => viewModel.register(
-                              context,
-                              nameController.text,
-                              emailController.text,
-                              passwordController.text,
-                              phoneController.text,
+                            onPressed: () => cubit.signUpWithEmail(
+                              name: nameController.text,
+                              email: emailController.text,
+                              password: passwordController.text,
                             ),
                           ),
                     const SizedBox(height: 24),
-
-                    // Login Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'already_have_account'.tr(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        GestureDetector(
-                          onTap: () =>
-                              Navigator.pop(context), // Pops back to Login
-                          child: Text(
-                            'login'.tr(),
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-
-                    const Align(
-                      alignment: Alignment.center,
-                      child: LanguageToggle(),
-                    ),
                   ],
                 );
               },

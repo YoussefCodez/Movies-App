@@ -27,5 +27,8 @@
   "delete_account": "Delete Account",
   "reset_password": "Reset Password",
   "pick_avatar": "Pick Avatar",
-  "no_data": "No Data Found"
+  "no_data": "No Data Found",
+  "home": "Home",
+  "explore": "Explore",
+  "profile": "Profile"
 }

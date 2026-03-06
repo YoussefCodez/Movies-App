@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/auth/presentation/view_models/forget_password_view_model.dart';
 import 'package:movies/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:movies/features/auth/presentation/widgets/primary_button.dart';
 import 'package:movies/features/auth/domain/repositories/auth_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movies/features/auth/presentation/cubits/forget_password_cubit.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   ForgetPasswordScreen({super.key});
@@ -13,61 +13,72 @@ class ForgetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authRepository = Provider.of<AuthRepository>(context, listen: false);
+    final authRepository = RepositoryProvider.of<AuthRepository>(context);
 
-    return ChangeNotifierProvider(
-      create: (_) => ForgetPasswordViewModel(authRepository: authRepository),
+    return BlocProvider(
+      create: (_) => ForgetPasswordCubit(authRepository: authRepository),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           title: Text(
             'forget_password'.tr(),
-            style: TextStyle(color: Theme.of(context).primaryColor),
+            style: const TextStyle(color: Colors.white),
           ),
+          centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Theme.of(context).primaryColor),
+            icon: const Icon(Icons.arrow_back, color: Color(0xFFFFC107)),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24.0,
-              vertical: 40.0,
-            ),
-            child: Consumer<ForgetPasswordViewModel>(
-              builder: (context, viewModel, child) {
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: BlocConsumer<ForgetPasswordCubit, ForgetPasswordState>(
+              listener: (context, state) {
+                if (state is ForgetPasswordSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Verification email sent to ${emailController.text}',
+                      ),
+                    ),
+                  );
+                  Navigator.pop(context);
+                } else if (state is ForgetPasswordFailure) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message)));
+                }
+              },
+              builder: (context, state) {
+                final cubit = context.read<ForgetPasswordCubit>();
+                final isLoading = state is ForgetPasswordLoading;
+
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Illustration Placeholder
-                    const SizedBox(
-                      height: 250,
-                      child: Center(
-                        child: Icon(
-                          Icons.image,
-                          size: 100,
-                          color: Colors.white54,
-                        ), // Placeholder for actual illustration
+                    Image.asset(
+                      'assets/images/forgot_password.png',
+                      height: 200,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.lock_reset,
+                        size: 100,
+                        color: Color(0xFFFFC107),
                       ),
                     ),
                     const SizedBox(height: 40),
-
-                    // Email Field
                     CustomTextField(
                       controller: emailController,
                       hintText: 'email'.tr(),
                       prefixIcon: Icons.email,
-                      keyboardType: TextInputType.emailAddress,
                     ),
-                    const SizedBox(height: 24),
-
-                    // Verify Button
-                    viewModel.isLoading
+                    const SizedBox(height: 40),
+                    isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : PrimaryButton(
                             text: 'verify_email'.tr(),
                             onPressed: () =>
-                                viewModel.verifyEmail(emailController.text),
+                                cubit.sendResetEmail(emailController.text),
                           ),
                   ],
                 );

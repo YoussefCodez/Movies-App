@@ -1,118 +1,93 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:movies/features/home/presentation/view_models/home_view_model.dart';
+import 'package:movies/core/theme/app_colors.dart';
+import 'package:movies/features/home/presentation/cubits/home_cubit.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(),
-      child: SingleChildScrollView(
-        child: Consumer<HomeViewModel>(
-          builder: (context, viewModel, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+    return BlocProvider(
+      create: (_) => HomeCubit(),
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          final cubit = context.read<HomeCubit>();
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                // Top Custom Title "Available Now"
-                Center(
-                  child: Text(
-                    'available_now'.tr(),
-                    style: const TextStyle(
-                      fontFamily: 'ScriptFont', // Placeholder for script font
-                      fontSize: 32,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Carousel Slider
-                CarouselSlider(
-                  options: CarouselOptions(
-                    height: 400.0,
-                    enlargeCenterPage: true,
-                    autoPlay: true,
-                    aspectRatio: 16 / 9,
-                    autoPlayCurve: Curves.fastOutSlowIn,
-                    enableInfiniteScroll: true,
-                    autoPlayAnimationDuration: const Duration(
-                      milliseconds: 800,
-                    ),
-                    viewportFraction: 0.65, // Shows partial side items
-                    onPageChanged: (index, reason) =>
-                        viewModel.onCarouselPageChanged(index),
-                  ),
-                  items: viewModel.availableNowMovies.map((url) {
-                    return Builder(
-                      builder: (BuildContext context) {
+                // Top Featured Section with Carousel
+                Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    CarouselSlider.builder(
+                      itemCount: state.availableNowMovies.length,
+                      itemBuilder: (context, index, realIndex) {
                         return Container(
                           width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.symmetric(horizontal: 5.0),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
                             image: DecorationImage(
-                              image: NetworkImage(url),
+                              image: AssetImage(
+                                state.availableNowMovies[index],
+                              ),
                               fit: BoxFit.cover,
                             ),
                           ),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              margin: const EdgeInsets.all(8),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black54,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: const [
-                                  Text(
-                                    '7.7',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4),
-                                  Icon(
-                                    Icons.star,
-                                    color: Colors.yellow,
-                                    size: 16,
-                                  ),
+                          // Gradient Overlay
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.8),
                                 ],
                               ),
                             ),
                           ),
                         );
                       },
-                    );
-                  }).toList(),
+                      options: CarouselOptions(
+                        height: 500,
+                        viewportFraction: 1.0,
+                        autoPlay: true,
+                        onPageChanged: (index, reason) =>
+                            cubit.onCarouselPageChanged(index),
+                      ),
+                    ),
+
+                    // Indicators
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: state.availableNowMovies.asMap().entries.map((
+                          entry,
+                        ) {
+                          return Container(
+                            width: 8.0,
+                            height: 8.0,
+                            margin: const EdgeInsets.symmetric(horizontal: 4.0),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: state.currentCarouselIndex == entry.key
+                                  ? AppColors.primary
+                                  : Colors.white54,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 ),
+
                 const SizedBox(height: 20),
 
-                // Lower Custom Title "Watch Now"
-                Center(
-                  child: Text(
-                    'watch_now'.tr(),
-                    style: const TextStyle(
-                      fontFamily: 'ScriptFont', // Placeholder
-                      fontSize: 36,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Horizontal List: Action
+                // Horizontal List Section: Action
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
@@ -121,80 +96,38 @@ class HomeTab extends StatelessWidget {
                       Text(
                         'action'.tr(),
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            'see_more'.tr(),
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward,
-                            color: Theme.of(context).primaryColor,
-                            size: 16,
-                          ),
-                        ],
+                      Text(
+                        'see_more'.tr(),
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-
-                // Horizontal ListView
+                const SizedBox(height: 12),
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                    itemCount: viewModel.actionMovies.length,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    itemCount: state.actionMovies.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        width: 130,
-                        margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          image: DecorationImage(
-                            image: NetworkImage(viewModel.actionMovies[index]),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                Text(
-                                  '7.7',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 4),
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                  size: 12,
-                                ),
-                              ],
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: Container(
+                          width: 140,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                              image: AssetImage(state.actionMovies[index]),
+                              fit: BoxFit.cover,
                             ),
                           ),
                         ),
@@ -202,11 +135,10 @@ class HomeTab extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: 30),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
