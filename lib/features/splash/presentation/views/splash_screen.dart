@@ -11,7 +11,9 @@ class SplashScreen extends StatelessWidget {
       create: (context) => SplashCubit()..initSplash(),
       child: BlocListener<SplashCubit, SplashState>(
         listener: (context, state) {
-          if (state == SplashState.completed) {
+          if (state == SplashState.authenticated) {
+            Navigator.pushReplacementNamed(context, '/main');
+          } else if (state == SplashState.unauthenticated) {
             Navigator.pushReplacementNamed(context, '/login');
           }
         },

@@ -20,10 +20,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final profile = context.read<ProfileCubit>().state.userProfile;
-    nameController = TextEditingController(text: profile?.name);
-    phoneController = TextEditingController(text: profile?.phoneNumber);
-    selectedAvatar = profile?.avatarPath;
+    final user = context.read<ProfileCubit>().state.user;
+    nameController = TextEditingController(text: user?.displayName);
+    phoneController = TextEditingController(text: user?.phoneNumber);
+    selectedAvatar = 'assets/images/avatar1.png';
   }
 
   @override
@@ -137,7 +137,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           await cubit.updateProfile(
                             name: nameController.text,
                             phone: phoneController.text,
-                            avatar: selectedAvatar,
                           );
                           if (state.errorMessage == null) {
                             if (mounted) Navigator.pop(context);
@@ -160,7 +159,43 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        backgroundColor: const Color(0xFF282A28),
+                        title: Text(
+                          'delete_account'.tr(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        content: Text(
+                          'Are you sure you want to delete your account? This action cannot be undone.',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              await cubit.deleteAccount();
+                              if (mounted && state.isAccountDeleted) {
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/login',
+                                  (route) => false,
+                                );
+                              }
+                            },
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   child: Text(
                     'delete_account'.tr(),

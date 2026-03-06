@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:movies/core/services/get_it.dart';
-import 'package:movies/features/auth/domain/use_cases/sign_up_use_case.dart';
 import 'package:movies/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:movies/features/auth/presentation/widgets/primary_button.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movies/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:movies/features/auth/presentation/utils/validators.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
@@ -13,6 +13,7 @@ class RegisterScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   final List<String> avatars = [
     'assets/images/avatar1.png',
@@ -29,7 +30,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => AuthCubit(signUpUseCase: getIt<SignUpUseCase>()),
+      create: (_) => getIt<AuthCubit>(),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -61,69 +62,76 @@ class RegisterScreen extends StatelessWidget {
                 final cubit = context.read<AuthCubit>();
                 final isLoading = state is SignUpLoading;
 
-                return Column(
-                  children: [
-                    // Avatar Selection
-                    SizedBox(
-                      height: 150,
-                      child: PageView.builder(
-                        itemCount: avatars.length,
-                        // onPageChanged: (index) =>
-                        //     cubit.selectAvatar(avatars[index]),
-                        itemBuilder: (context, index) {
-                          return Center(
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundImage: AssetImage(avatars[index]),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'choose_avatar'.tr(),
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    const SizedBox(height: 30),
-                    CustomTextField(
-                      controller: nameController,
-                      hintText: 'name'.tr(),
-                      prefixIcon: Icons.person,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextField(
-                      controller: emailController,
-                      hintText: 'email'.tr(),
-                      prefixIcon: Icons.email,
-                    ),
-                    const SizedBox(height: 16),
-                    CustomTextField(
-                      controller: passwordController,
-                      hintText: 'password'.tr(),
-                      prefixIcon: Icons.lock,
-                      obscureText: false,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Icons.visibility_off,
-                          color: Colors.white,
+                return Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      // Avatar Selection
+                      SizedBox(
+                        height: 150,
+                        child: PageView.builder(
+                          itemCount: avatars.length,
+                          // onPageChanged: (index) =>
+                          //     cubit.selectAvatar(avatars[index]),
+                          itemBuilder: (context, index) {
+                            return Center(
+                              child: CircleAvatar(
+                                radius: 60,
+                                backgroundImage: AssetImage(avatars[index]),
+                              ),
+                            );
+                          },
                         ),
-                        onPressed: () {},
                       ),
-                    ),
-                    const SizedBox(height: 40),
-                    isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : PrimaryButton(
-                            text: 'create_account'.tr(),
-                            onPressed: () => cubit.signUpWithEmail(
-                              name: nameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
+                      const SizedBox(height: 10),
+                      Text(
+                        'choose_avatar'.tr(),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                      const SizedBox(height: 30),
+                      CustomTextField(
+                        controller: nameController,
+                        hintText: 'name'.tr(),
+                        prefixIcon: Icons.person,
+                        validator: AppValidators.validateName,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        controller: emailController,
+                        hintText: 'email'.tr(),
+                        prefixIcon: Icons.email,
+                        validator: AppValidators.validateEmail,
+                      ),
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        controller: passwordController,
+                        hintText: 'password'.tr(),
+                        prefixIcon: Icons.lock,
+                        obscureText: false,
+                        validator: AppValidators.validatePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(Icons.visibility_off, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : PrimaryButton(
+                              text: 'create_account'.tr(),
+                              onPressed: () {
+                                if (formKey.currentState!.validate()) {
+                                  cubit.signUpWithEmail(
+                                    name: nameController.text,
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                  );
+                                }
+                              },
                             ),
-                          ),
-                    const SizedBox(height: 24),
-                  ],
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 );
               },
             ),

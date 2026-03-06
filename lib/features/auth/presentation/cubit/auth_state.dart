@@ -22,3 +22,37 @@ final class SignUpError extends AuthState {
 
   const SignUpError({required this.message});
 }
+
+final class LogInLoading extends AuthState {}
+
+final class LogInSuccess extends AuthState {
+  final UserEntity user;
+
+  const LogInSuccess({required this.user});
+}
+
+final class LogInError extends AuthState {
+  final String message;
+
+  const LogInError({required this.message});
+}
+
+final class SignOutLoading extends AuthState {}
+
+final class SignOutSuccess extends AuthState {}
+
+final class SignOutError extends AuthState {
+  final String message;
+
+  const SignOutError({required this.message});
+}
+
+final class ResetPasswordLoading extends AuthState {}
+
+final class ResetPasswordSuccess extends AuthState {}
+
+final class ResetPasswordError extends AuthState {
+  final String message;
+
+  const ResetPasswordError({required this.message});
+}
