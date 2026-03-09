@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:movies/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:movies/features/profile/presentation/view_models/profile_view_model.dart';
 import 'package:movies/features/profile/data/repositories/mock_profile_repository.dart';
 import 'package:movies/features/profile/presentation/views/update_profile_screen.dart';
@@ -105,8 +107,12 @@ class ProfileTab extends StatelessWidget {
                     const SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: () {
-                        // Logout logic later
-                        Navigator.pushReplacementNamed(context, '/login');
+                        context.read<AuthCubit>().signOut();
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/login',
+                          (route) => false,
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFE53935),
