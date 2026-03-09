@@ -8,7 +8,7 @@ class SplashViewModel extends ChangeNotifier {
     // Default routing to Login screen after splash.
     // Ensure the Navigator can find this route.
     if (context.mounted) {
-      Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/onboarding');
     }
   }
 }

@@ -54,7 +54,7 @@ class RegisterScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Avatar Selection (Placeholders for now)
+
                     SizedBox(
                       height: 120,
                       child: Row(

@@ -19,7 +19,7 @@ class LoginScreen extends StatelessWidget {
     bool isArabic = context.locale.languageCode == 'ar';
     final authRepository = Provider.of<AuthRepository>(context, listen: false);
 
-    // Use ChangeNotifierProvider inside the route configuration or here per screen
+
     return ChangeNotifierProvider(
       create: (_) => LoginViewModel(authRepository: authRepository),
       child: Scaffold(
@@ -85,7 +85,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Login Button
+
                     viewModel.isLoading
                         ? const Center(child: CircularProgressIndicator())
                         : PrimaryButton(
@@ -97,7 +97,7 @@ class LoginScreen extends StatelessWidget {
                           ),
                     const SizedBox(height: 24),
 
-                    // Create Account Link
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -120,7 +120,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // OR Divider
+
                     Row(
                       children: [
                         const Expanded(
@@ -142,14 +142,14 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    // Google Login Button
+
                     SocialButton(
                       text: 'login_with_google'.tr(),
                       onPressed: viewModel.loginWithGoogle,
                     ),
                     const SizedBox(height: 48),
 
-                    // Language Toggle
+
                     const Align(
                       alignment: Alignment.center,
                       child: LanguageToggle(),

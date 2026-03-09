@@ -10,7 +10,7 @@ class MainLayoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List of tabs corresponding to the bottom navigation bar
+
     final List<Widget> tabs = [
       const HomeTab(),
       const SearchTab(),
@@ -28,7 +28,6 @@ class MainLayoutScreen extends StatelessWidget {
       child: Consumer<MainLayoutViewModel>(
         builder: (context, viewModel, child) {
           return Scaffold(
-            // We do not want an AppBar for the Home/Main screens usually in this design
             body: SafeArea(
               child: IndexedStack(
                 index: viewModel.selectedIndex,

@@ -40,7 +40,7 @@ class ProfileTab extends StatelessWidget {
                       radius: 40,
                       backgroundImage: AssetImage(user.avatarPath),
                       backgroundColor: Colors.grey[800],
-                      onBackgroundImageError: (_, __) =>
+                      onBackgroundImageError: (error, stackTrace) =>
                           const Icon(Icons.person, size: 40),
                     ),
                     const SizedBox(width: 40),
@@ -262,7 +262,7 @@ class ProfileTab extends StatelessWidget {
           child: Image.network(
             list[index],
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: Colors.grey[800]),
+            errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey[800]),
           ),
         );
       },
