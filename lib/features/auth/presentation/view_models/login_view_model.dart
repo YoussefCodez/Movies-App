@@ -13,13 +13,13 @@ class LoginViewModel extends ChangeNotifier {
   bool get isPasswordVisible => _isPasswordVisible;
   bool get isLoading => _isLoading;
 
-  // Toggles the visibility of the password field
+
   void togglePasswordVisibility() {
     _isPasswordVisible = !_isPasswordVisible;
     notifyListeners();
   }
 
-  // Actual Email/Password Login logic
+
   Future<void> loginWithEmail(String email, String password) async {
     _isLoading = true;
     notifyListeners();
@@ -33,7 +33,7 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
-  // Actual Google Auth logic
+
   Future<void> loginWithGoogle() async {
     _isLoading = true;
     notifyListeners();

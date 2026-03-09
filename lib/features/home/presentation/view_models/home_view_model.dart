@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  // Placeholder images for carousel and lists
-  // Since we haven't integrated an API yet, we'll use placeholder networked images
-  // or define the structure.
 
   final List<String> availableNowMovies = [
     'https://image.tmdb.org/t/p/w500/iZf0KyrE25z1apesvKQFAMhCybg.jpg', // 1917 Example

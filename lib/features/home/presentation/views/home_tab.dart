@@ -18,12 +18,12 @@ class HomeTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                // Top Custom Title "Available Now"
+
                 Center(
                   child: Text(
                     'available_now'.tr(),
                     style: const TextStyle(
-                      fontFamily: 'ScriptFont', // Placeholder for script font
+                      fontFamily: 'ScriptFont',
                       fontSize: 32,
                       color: Colors.white,
                     ),
@@ -147,7 +147,7 @@ class HomeTab extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
 
-                // Horizontal ListView
+
                 SizedBox(
                   height: 200,
                   child: ListView.builder(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Common Colors
-  static const Color primary = Color(0xFFF6BD00); // Yellow/Gold from design
+  static const Color primary = Color(0xFFF6BD00);
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color red = Colors.red;

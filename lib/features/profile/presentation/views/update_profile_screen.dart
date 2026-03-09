@@ -64,7 +64,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       radius: 60,
                       backgroundImage: AssetImage(_selectedAvatar ?? ''),
                       backgroundColor: Colors.grey[800],
-                      onBackgroundImageError: (_, __) =>
+                      onBackgroundImageError: (error, stackTrace) =>
                           const Icon(Icons.person, size: 60),
                     ),
                   ],
@@ -126,7 +126,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         ),
                         child: CircleAvatar(
                           backgroundImage: AssetImage(avatar),
-                          onBackgroundImageError: (_, __) =>
+                          onBackgroundImageError: (error, stackTrace) =>
                               const Icon(Icons.person),
                         ),
                       ),
@@ -168,7 +168,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               phone: _phoneController.text,
                               avatar: _selectedAvatar,
                             );
-                            if (mounted) Navigator.pop(context);
+                            if (context.mounted) Navigator.pop(context);
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFC107),

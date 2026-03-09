@@ -17,6 +17,7 @@ import 'features/auth/presentation/views/login_screen.dart';
 import 'features/auth/presentation/views/register_screen.dart';
 import 'features/auth/presentation/views/forget_password_screen.dart';
 import 'features/main/presentation/views/main_layout_screen.dart';
+import 'features/onboarding/presentation/screens/onboarding_screen.dart';
 
 // Cubits
 import 'features/auth/presentation/cubit/auth_cubit.dart';
@@ -86,6 +87,7 @@ class MovieApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/forget_password': (context) => ForgetPasswordScreen(),
         '/main': (context) => const MainLayoutScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
       },
     );
   }
