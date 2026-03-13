@@ -19,6 +19,7 @@
   "see_more": "See More",
   "search": "Search",
   "wish_list": "Wish List",
+  "watch_list": "Watch List",
   "history": "History",
   "edit_profile": "Edit Profile",
   "exit": "Exit",
@@ -36,5 +37,12 @@
   "stay_updated_desc": "Get notified about the latest releases and trends.",
   "skip": "Skip",
   "next": "Next",
-  "finish": "Finish"
+  "finish": "Finish",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "are_you_sure_delete_account": "Are you sure you want to delete your account? This action cannot be undone.",
+  "are_you_sure_exit": "Are you sure you want to sign out?",
+  "reauthenticate": "Re-authenticate",
+  "reauth_message": "Please enter your password to confirm this sensitive action."
 }

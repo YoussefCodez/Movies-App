@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:movies/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:movies/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:movies/features/auth/presentation/widgets/primary_button.dart';
@@ -22,29 +24,58 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController phoneController = TextEditingController();
 
   final List<String> avatars = [
-    'assets/images/user1.png',
-    'assets/images/user2.png',
-    'assets/images/user3.png',
+    'assets/images/avatar1.png',
+    'assets/images/avatar2.png',
+    'assets/images/avatar3.png',
+    'assets/images/avatar4.png',
+    'assets/images/avatar5.png',
+    'assets/images/avatar6.png',
+    'assets/images/avatar7.png',
+    'assets/images/avatar8.png',
+    'assets/images/avatar9.png',
   ];
 
   int selectedAvatarIndex = 0;
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
+  PageController? _avatarPageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initAvatar();
+  }
+
+  Future<void> _initAvatar() async {
+    final prefs = await SharedPreferences.getInstance();
+    int? savedIndex = prefs.getInt('selected_avatar_index');
+
+    if (savedIndex == null) {
+      savedIndex = Random().nextInt(avatars.length);
+      await prefs.setInt('selected_avatar_index', savedIndex);
+    }
+
+    if (mounted) {
+      setState(() {
+        selectedAvatarIndex = savedIndex!;
+        _avatarPageController = PageController(
+          viewportFraction: 0.35,
+          initialPage: selectedAvatarIndex,
+        );
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _avatarPageController?.dispose();
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     phoneController.dispose();
     super.dispose();
-  }
-
-  void selectAvatar(int index) {
-    setState(() {
-      selectedAvatarIndex = index;
-    });
   }
 
   @override
@@ -85,27 +116,61 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   // Avatar Selection
                   SizedBox(
-                    height: 120,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: List.generate(avatars.length, (index) {
-                        bool isSelected = selectedAvatarIndex == index;
-                        return GestureDetector(
-                          onTap: () => selectAvatar(index),
-                          child: CircleAvatar(
-                            radius: isSelected ? 50 : 35,
-                            backgroundColor: isSelected
-                                ? Theme.of(context).primaryColor
-                                : Colors.transparent,
-                            child: Icon(
-                              Icons.person,
-                              size: isSelected ? 60 : 40,
-                              color: Colors.white,
-                            ),
+                    height:
+                        140, // Height slightly increased to accommodate scaling
+                    child: _avatarPageController == null
+                        ? const Center(child: CircularProgressIndicator())
+                        : PageView.builder(
+                            controller: _avatarPageController,
+                            itemCount: avatars.length,
+                            physics: const BouncingScrollPhysics(),
+                            onPageChanged: (index) async {
+                              setState(() {
+                                selectedAvatarIndex = index;
+                              });
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setInt(
+                                'selected_avatar_index',
+                                index,
+                              );
+                            },
+                            itemBuilder: (context, index) {
+                              bool isSelected = selectedAvatarIndex == index;
+                              return GestureDetector(
+                                onTap: () {
+                                  // If they tap an avatar, animate nicely to it
+                                  _avatarPageController?.animateToPage(
+                                    index,
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  );
+                                },
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeOutBack,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: AnimatedScale(
+                                    scale: isSelected
+                                        ? 1.15
+                                        : 0.75, // Central item is larger
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeOutBack,
+                                    child: CircleAvatar(
+                                      radius: 45,
+                                      backgroundColor: Colors.transparent,
+                                      child: Image.asset(
+                                        avatars[index],
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      }),
-                    ),
                   ),
                   const Center(
                     child: Text(
