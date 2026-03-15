@@ -1,10 +1,6 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
+
 
 part of 'movie_model.dart';
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
 
 MovieResponse _$MovieResponseFromJson(Map<String, dynamic> json) =>
     MovieResponse(

@@ -25,7 +25,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
         avatarPath: data['avatarPath'] ?? 'assets/images/avatar1.png',
       );
     } else {
-      // Fallback for new users if doc doesn't exist yet
       final user = _auth.currentUser;
       return UserProfile(
         uid: uid,
@@ -54,14 +53,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
     final uid = user.uid;
 
-    // 1. Delete user data from Firestore
     await _firestore.collection('users').doc(uid).delete();
 
-    // Optional: Delete related data like wishlist/history if they are in subcollections
-    // Since we store them in 'users/$uid/wishlist/...', deleting the user doc doesn't delete subcollections.
-    // However, for Simplicity in this task, we will focus on the main user record and auth.
-
-    // 2. Delete from FirebaseAuth
     await user.delete();
   }
 }

@@ -125,7 +125,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       await deleteAccount();
     } catch (e) {
       emit(ProfileError(e.toString()));
-      // Stay on current screen/state to allow retry
+
     }
   }
 

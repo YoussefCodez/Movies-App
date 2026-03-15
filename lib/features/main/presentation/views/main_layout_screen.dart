@@ -32,30 +32,54 @@ class _MainLayoutScreenState extends State<MainLayoutScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      body: SafeArea(
-        child: IndexedStack(index: _selectedIndex, children: _tabs),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: const Border(
-            top: BorderSide(color: Colors.white12, width: 0.5),
+      body: Stack(
+        children: [
+          IndexedStack(index: _selectedIndex, children: _tabs),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 12,
+            child: Container(
+              height: 65,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: BoxDecoration(
+                color: const Color(0xFF282A28), // Dark grey color from design
+                borderRadius: BorderRadius.circular(35),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildNavItem(0, Icons.home_filled),
+                  _buildNavItem(1, Icons.search),
+                  _buildNavItem(2, Icons.explore),
+                  _buildNavItem(3, Icons.person),
+                ],
+              ),
+            ),
           ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          backgroundColor: AppColors.backgroundDark,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.white60,
-          type: BottomNavigationBarType.fixed,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
-            BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Browse'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Icon(
+          icon,
+          color: isSelected ? AppColors.primary : Colors.white,
+          size: 28,
         ),
       ),
     );

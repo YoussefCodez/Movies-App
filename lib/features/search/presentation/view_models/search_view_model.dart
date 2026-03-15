@@ -7,14 +7,13 @@ class SearchViewModel extends ChangeNotifier {
   bool _isSearching = false;
   bool get isSearching => _isSearching;
 
-  // Placeholder for search results
+
   List<dynamic> _searchResults = [];
   List<dynamic> get searchResults => _searchResults;
 
   void updateSearchQuery(String query) {
     _searchQuery = query;
     _isSearching = query.isNotEmpty;
-    // In a real app, we would trigger an API call here.
     notifyListeners();
   }
 
