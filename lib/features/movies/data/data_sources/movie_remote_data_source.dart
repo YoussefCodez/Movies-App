@@ -5,6 +5,7 @@ import '../models/movie_model.dart';
 abstract class MovieRemoteDataSource {
   Future<MovieResponse> getMovies();
   Future<MovieDetailsResponse> getMovieDetails(int movieId);
+  Future<MovieResponse> getSimilarMovies(int movieId);
 }
 
 @LazySingleton(as: MovieRemoteDataSource)
@@ -25,5 +26,10 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
       withImages: true,
       withCast: true,
     );
+  }
+
+  @override
+  Future<MovieResponse> getSimilarMovies(int movieId) {
+    return apiService.getSimilarMovies(movieId);
   }
 }

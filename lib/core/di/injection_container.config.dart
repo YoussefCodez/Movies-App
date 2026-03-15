@@ -65,6 +65,8 @@ import '../../features/movies/domain/repositories/movie_repository.dart'
 import '../../features/movies/domain/usecases/get_movie_details_usecase.dart'
     as _i237;
 import '../../features/movies/domain/usecases/get_movies_usecase.dart' as _i409;
+import '../../features/movies/domain/usecases/get_similar_movies_usecase.dart'
+    as _i654;
 import '../../features/movies/presentation/manager/movies_cubit.dart' as _i366;
 import '../../features/profile/data/repositories/profile_repository_impl.dart'
     as _i334;
@@ -129,8 +131,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i921.ApiService>(() => _i921.ApiService(gh<_i361.Dio>()));
     gh.lazySingleton<_i404.MovieRemoteDataSource>(
         () => _i404.MovieRemoteDataSourceImpl(gh<_i921.ApiService>()));
-    gh.lazySingleton<_i887.BrowseRemoteDataSource>(
-        () => _i887.BrowseRemoteDataSourceImpl(gh<_i921.ApiService>()));
     gh.lazySingleton<_i828.HistoryRemoteDataSource>(
         () => _i343.HistoryRemoteDataSourceImpl(
               gh<_i974.FirebaseFirestore>(),
@@ -159,6 +159,8 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i894.ProfileRepository>(),
           gh<_i59.FirebaseAuth>(),
         ));
+    gh.lazySingleton<_i887.BrowseRemoteDataSource>(
+        () => _i887.BrowseRemoteDataSourceImpl(gh<_i921.ApiService>()));
     gh.lazySingleton<_i221.BrowseRepository>(() => _i791.BrowseRepositoryImpl(
           remoteDataSource: gh<_i887.BrowseRemoteDataSource>(),
           localDataSource: gh<_i900.BrowseLocalDataSource>(),
@@ -177,6 +179,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i409.GetMoviesUseCase(gh<_i465.MovieRepository>()));
     gh.lazySingleton<_i237.GetMovieDetailsUseCase>(
         () => _i237.GetMovieDetailsUseCase(gh<_i465.MovieRepository>()));
+    gh.factory<_i654.GetSimilarMoviesUseCase>(
+        () => _i654.GetSimilarMoviesUseCase(gh<_i465.MovieRepository>()));
     gh.lazySingleton<_i962.AddToHistoryUseCase>(
         () => _i962.AddToHistoryUseCase(gh<_i142.HistoryRepository>()));
     gh.lazySingleton<_i840.GetHistoryUseCase>(
@@ -192,8 +196,6 @@ extension GetItInjectableX on _i174.GetIt {
           remoteDataSource: gh<_i655.WishlistRemoteDataSource>(),
           localDataSource: gh<_i397.WishlistLocalDataSource>(),
         ));
-    gh.factory<_i269.MovieDetailsCubit>(
-        () => _i269.MovieDetailsCubit(gh<_i237.GetMovieDetailsUseCase>()));
     gh.lazySingleton<_i74.AddToWishlistUseCase>(
         () => _i74.AddToWishlistUseCase(gh<_i4.WishlistRepository>()));
     gh.lazySingleton<_i1065.GetWishlistUseCase>(
@@ -202,6 +204,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i782.IsInWishlistUseCase(gh<_i4.WishlistRepository>()));
     gh.lazySingleton<_i120.RemoveFromWishlistUseCase>(
         () => _i120.RemoveFromWishlistUseCase(gh<_i4.WishlistRepository>()));
+    gh.factory<_i269.MovieDetailsCubit>(() => _i269.MovieDetailsCubit(
+          gh<_i237.GetMovieDetailsUseCase>(),
+          gh<_i654.GetSimilarMoviesUseCase>(),
+        ));
     gh.lazySingleton<_i154.HistoryCubit>(() => _i154.HistoryCubit(
           addToHistoryUseCase: gh<_i962.AddToHistoryUseCase>(),
           getHistoryUseCase: gh<_i840.GetHistoryUseCase>(),

@@ -23,6 +23,9 @@ abstract class ApiService {
     @Query("with_images") bool withImages = true,
     @Query("with_cast") bool withCast = true,
   });
+
+  @GET("movie_suggestions.json")
+  Future<MovieResponse> getSimilarMovies(@Query("movie_id") int movieId);
 }
 
 @module

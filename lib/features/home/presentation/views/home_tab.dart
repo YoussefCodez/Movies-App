@@ -8,6 +8,8 @@ import 'package:movies/features/movies/presentation/manager/movies_state.dart';
 import 'package:movies/features/movies/domain/entities/movie_entity.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:movies/core/theme/app_colors.dart';
+import 'package:movies/features/browse/presentation/cubit/browse_cubit.dart';
+import 'package:movies/features/browse/presentation/views/browse_tab.dart';
 
 class HomeTab extends StatelessWidget {
   const HomeTab({super.key});
@@ -116,18 +118,38 @@ class CategorySection extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Row(
-                children: [
-                  Text(
-                    'see_more'.tr(),
-                    style: TextStyle(color: AppColors.primary, fontSize: 14),
-                  ),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: AppColors.primary,
-                    size: 16,
-                  ),
-                ],
+              GestureDetector(
+                onTap: () {
+                  context.read<BrowseCubit>().changeGenre(category);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(category),
+                          backgroundColor: AppColors.backgroundDark,
+                          elevation: 0,
+                          iconTheme: const IconThemeData(color: Colors.white),
+                        ),
+                        backgroundColor: AppColors.backgroundDark,
+                        body: const BrowseTab(),
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      'see_more'.tr(),
+                      style: const TextStyle(color: AppColors.primary, fontSize: 14),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward,
+                      color: AppColors.primary,
+                      size: 16,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

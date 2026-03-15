@@ -218,23 +218,19 @@ class MovieDetailsScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              _buildStatPill(
-                                AppColors.inputBackgroundDark,
-                                AppColors.primary,
+                              _buildSmallStatPill(
                                 Icons.favorite,
                                 movie.likeCount?.toString() ?? '0',
                               ),
-                              _buildStatPill(
-                                AppColors.inputBackgroundDark,
-                                AppColors.primary,
+                              const SizedBox(width: 16),
+                              _buildSmallStatPill(
                                 Icons.access_time_filled,
                                 movie.runtime?.toString() ?? 'N/A',
                               ),
-                              _buildStatPill(
-                                AppColors.inputBackgroundDark,
-                                AppColors.primary,
+                              const SizedBox(width: 16),
+                              _buildSmallStatPill(
                                 Icons.star,
                                 movie.rating.toString(),
                               ),
@@ -244,22 +240,87 @@ class MovieDetailsScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    _buildSectionTitle('Genres'),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Wrap(
-                        spacing: 12.0,
-                        runSpacing: 12.0,
-                        children: movie.genres
-                            .map(
-                              (genre) => _buildGenreChip(
-                                AppColors.inputBackgroundDark,
-                                genre,
+                    if (movie.screenshots.isNotEmpty) ...[
+                      _buildSectionTitle('Screen Shots'),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: movie.screenshots.map((screenshot) {
+                            return Container(
+                              width: double.infinity,
+                              height: 180,
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                  image: NetworkImage(screenshot),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            )
-                            .toList(),
+                            );
+                          }).toList(),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                    ],
+                    _buildSectionTitle('Similar'),
+                    if (state.similarMovies.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.7,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemCount: state.similarMovies.length,
+                          itemBuilder: (context, index) {
+                            final similar = state.similarMovies[index];
+                            return Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                image: DecorationImage(
+                                  image: NetworkImage(similar.mediumCoverImage),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            similar.rating.toString(),
+                                            style: const TextStyle(color: Colors.white, fontSize: 12),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          const Icon(Icons.star, color: AppColors.primary, size: 12),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text("No similar movies found.", style: TextStyle(color: Colors.white)),
+                      ),
                     const SizedBox(height: 24),
                     _buildSectionTitle('Summary'),
                     Padding(
@@ -276,76 +337,66 @@ class MovieDetailsScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     if (movie.cast.isNotEmpty) ...[
                       _buildSectionTitle('Cast'),
-                      SizedBox(
-                        height: 120,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: movie.cast.length,
-                          itemBuilder: (context, index) {
-                            final actor = movie.cast[index];
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          children: movie.cast.map((actor) {
                             return Container(
-                              width: 80,
-                              margin: const EdgeInsets.only(right: 16),
-                              child: Column(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.inputBackgroundDark,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 35,
-                                    backgroundImage: actor.urlSmallImage != null
-                                        ? NetworkImage(actor.urlSmallImage!)
-                                        : null,
-                                    backgroundColor:
-                                        AppColors.inputBackgroundDark,
-                                    child: actor.urlSmallImage == null
-                                        ? const Icon(
-                                            Icons.person,
-                                            color: Colors.white54,
-                                          )
-                                        : null,
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: actor.urlSmallImage != null
+                                        ? Image.network(actor.urlSmallImage!, width: 60, height: 60, fit: BoxFit.cover)
+                                        : Container(width: 60, height: 60, color: Colors.grey[800], child: const Icon(Icons.person, color: Colors.white54)),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    actor.name,
-                                    maxLines: 2,
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Name : ${actor.name}',
+                                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Character : ${actor.characterName}',
+                                          style: const TextStyle(color: Colors.white70, fontSize: 14),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
                             );
-                          },
+                          }).toList(),
                         ),
                       ),
                       const SizedBox(height: 24),
                     ],
-                    if (movie.screenshots.isNotEmpty) ...[
-                      _buildSectionTitle('Screenshots'),
-                      SizedBox(
-                        height: 150,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: movie.screenshots.length,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 250,
-                              margin: const EdgeInsets.only(right: 16),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                image: DecorationImage(
-                                  image: NetworkImage(movie.screenshots[index]),
-                                  fit: BoxFit.cover,
-                                ),
+                    _buildSectionTitle('Genres'),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Wrap(
+                        spacing: 12.0,
+                        runSpacing: 12.0,
+                        children: movie.genres
+                            .map(
+                              (genre) => _buildGenreChip(
+                                AppColors.inputBackgroundDark,
+                                genre,
                               ),
-                            );
-                          },
-                        ),
+                            )
+                            .toList(),
                       ),
-                    ],
+                    ),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -379,35 +430,27 @@ class MovieDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatPill(
-    Color bgColor,
-    Color iconColor,
-    IconData icon,
-    String text,
-  ) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 6.0),
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: iconColor, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+  Widget _buildSmallStatPill(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: AppColors.inputBackgroundDark,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -90,4 +90,15 @@ class MovieRepositoryImpl implements MovieRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, List<MovieEntity>>> getSimilarMovies(int movieId) async {
+    try {
+      final response = await remoteDataSource.getSimilarMovies(movieId);
+      final movies = response.data?.movies?.map((m) => m.toEntity()).toList() ?? [];
+      return Right(movies);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
