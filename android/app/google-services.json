@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "729260148039",
+    "project_id": "movies-6f269",
+    "storage_bucket": "movies-6f269.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729260148039:android:d1e6bc51c5c9b79dbb7862",
+        "android_client_info": {
+          "package_name": "com.example.chatting"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "729260148039-95hkes9q9pplh1g0v2t4vu64a3ve8hl5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6nDs2vcWxsN2k46dytZ47MFBNMKSi_4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "729260148039-95hkes9q9pplh1g0v2t4vu64a3ve8hl5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "729260148039-lug9tk3qde5mi2blp49vci98u8mfstud.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.chatting"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
